@@ -18,6 +18,9 @@
 
 using namespace std;
 
+int step1 = 0;
+int step2 = 0;
+
 // ------------
 // collatz_read
 // ------------
@@ -106,6 +109,8 @@ int count_cycles(int i, vector<int>& list)
         currentNum = i;
         ct = 1;
         
+        list.push_back(currentNum);
+
         while(currentNum>1)
         {
             if((currentNum%2) == 0)
@@ -152,14 +157,26 @@ int collatz_eval (int i, int j)
         vector<int> smallerV = list1;
         vector<int> biggerV = list2;
 
-       for(int it = 0; it < smallerV.size(); ++it)
-    {
-        for(int itt = 0; itt < biggerV.size(); ++itt)
+        for(int it = 0; it < smallerV.size(); ++it)
         {
-            if(smallerV[it] == biggerV[itt])
-                return smallerV[it];
+            for(int itt = 0; itt < biggerV.size(); ++itt)
+            {
+                if(smallerV[it] == biggerV[itt])
+                {
+                    if(smallerV[0] == list1[0])
+                    {
+                        step1 = itt;
+                        step2 = it;
+                    }
+                    else
+                    {
+                        step1 = it;
+                        step2 = itt;
+                    }
+                    return smallerV[it];
+                }
+            }
         }
-    }
     }
     else
     {
@@ -167,26 +184,28 @@ int collatz_eval (int i, int j)
         vector<int> biggerV = list1;
 
         for(int it = 0; it < smallerV.size(); ++it)
-    {
-        for(int itt = 0; itt < biggerV.size(); ++itt)
         {
-            if(smallerV[it] == biggerV[itt])
-                return smallerV[it];
+            for(int itt = 0; itt <biggerV.size(); ++itt)
+            {
+                if(smallerV[it] == biggerV[itt])
+                {
+                    if(smallerV[0] == list1[0])
+                    {
+                        step1 = itt;
+                        step2 = it;
+                    }
+                    else
+                    {
+                        step1 = it;
+                        step2 = itt;
+                    }
+
+                    return smallerV[it];
+                }
+            }
         }
     }
-    }
 
-
-    // // listNums1.size()<listNums2.size() ? (vector<int>& smallerV = listNums1) : (vector<int>& smallerV = listNums2);
-    // //vector&<int> baseComp = (listNums1.size()<listNums2.size())? listNums1 : listNums2.size();
-    // for(int it = 0; it < smallerV.size(); ++it)
-    // {
-    //     for(int itt = 0; itt < biggerV.size(); ++itt)
-    //     {
-    //         if(smallerV[it] == biggerV[itt])
-    //             return smallerV[it];
-    //     }
-    // }
 
     return 0;
 }
@@ -196,7 +215,10 @@ int collatz_eval (int i, int j)
 // -------------
 
 void collatz_print (ostream& w, int i, int j, int v) {
-    w << i << " " << j << " " << v << endl;}
+    if(i == 0 && j == 0)
+        return;
+
+    w << i << " needs " << step2 << " steps, " << j << " needs " << step1 << " steps, they meet at " << v << endl;}
 
 // -------------
 // collatz_solve
@@ -231,4 +253,5 @@ void collatz_solve (istream& r, ostream& w) {
 int main () {
     using namespace std;
     collatz_solve(cin, cout);
-    return 0;}
+    return 0;
+}
