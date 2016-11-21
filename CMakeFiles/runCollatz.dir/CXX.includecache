@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/TracyN/Documents/GitHub/kattis-collatz/KattisCollatz.cpp
+iostream
+-
+string
+-
+utility
+-
+vector
+-
+cassert
+-
+iostream
+-
+iostream
+-
+

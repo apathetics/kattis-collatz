@@ -1,0 +1,4 @@
+/Users/TracyN/Documents/GitHub/kattis-collatz/CMakeFiles/edit_cache.dir
+/Users/TracyN/Documents/GitHub/kattis-collatz/CMakeFiles/rebuild_cache.dir
+/Users/TracyN/Documents/GitHub/kattis-collatz/CMakeFiles/runCollatz.dir
+/Users/TracyN/Documents/GitHub/kattis-collatz/CMakeFiles/old_runCollatz.dir
