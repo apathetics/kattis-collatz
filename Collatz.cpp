@@ -4,18 +4,17 @@
 // Glenn P. Downing
 // --------------------------
 
-#ifndef Collatz_h
-#define Collatz_h
-
 // --------
 // includes
 // --------
 
 #include <iostream> // istream, ostream
-#include <string>   // string
-#include <utility>  // pair
+#include <vector>
 
 using namespace std;
+
+int step1 = 0;
+int step2 = 0;
 
 // ------------
 // collatz_read
@@ -35,9 +34,9 @@ bool collatz_read (istream& r, int& i, int& j);
 // ------------
 
 /**
- * @param i the beginning of the range, inclusive
- * @param j the end       of the range, inclusive
- * @return the max cycle length of the range [i, j]
+ * @param i the first number
+ * @param j the second number
+ * @return the number where they first meet
  */
 int collatz_eval (int i, int j);
 
@@ -48,9 +47,9 @@ int collatz_eval (int i, int j);
 /**
  * print three ints to w
  * @param w an ostream
- * @param i the beginning of the range, inclusive
- * @param j the end       of the range, inclusive
- * @param v the max cycle length
+ * @param i the first number
+ * @param j the second number
+ * @param v the number where they meet
  */
 void collatz_print (ostream& w, int i, int j, int v);
 
@@ -64,7 +63,6 @@ void collatz_print (ostream& w, int i, int j, int v);
  */
 void collatz_solve (istream& r, ostream& w);
 
-#endif // Collatz_h
 // ----------------------------
 // projects/collatz/Collatz.c++
 // Copyright (C) 2016
@@ -77,9 +75,6 @@ void collatz_solve (istream& r, ostream& w);
 
 #include <cassert>  // assert
 #include <iostream> // endl, istream, ostream
-
-
-#define OPTIMIZATION_ON //using feature tag for optimization of cache
 
 using namespace std;
 
@@ -97,118 +92,112 @@ bool collatz_read (istream& r, int& i, int& j) {
 // collatz_eval
 // ------------
 
-int cache[1000000] = {0}; //use a cache implementation for optimization
-int optimized_eval(int i, int j)
+int count_cycles(int i, vector<long long>& list)
 {
-    bool cacheHit;      //detect hit flags
-    int maxCycle = 0;
     int currentNum;
-    int tempNum;        //use to test if i>j
-    int ct;             //counter for cycles
-
-    if (i > j)          //check if i>j! UVA will usually not trick but public tests
-    {
-        tempNum = i;
-        i = j;
-        j = tempNum;
-    }
-        
-    for (i; i <= j; i++) //cycle through the entire range with for loop
-    {
-        currentNum = i; //use holder
-        ct = 1;
-
-        if (cache[i] == 0)  //if there's nothing in that cache slot
-        {
-            cacheHit = false;
-        }
-
-        else
-        {
-            cacheHit = true;
-        }
-
-        if (!cacheHit)      //if nothing in slot, then perform collatz calc
-        {
-            while (currentNum > 1) //base exit case
-            {
-                if ((currentNum % 2) == 0) //if even, then divide
-                {
-                    currentNum = currentNum/2;
-                }
-                else 
-                {
-                    currentNum = (currentNum/2) + currentNum + 1; //instead 3n+1 then n/2, shortcut in algorithm and skip to the step after n/2 and add an extra ct++ for compensating the skipped cycle to optimize
-                    ct++;
-                }
-
-                ct++;
-            }
-
-            cache[i] = ct; //put the cycle in that cache slot
-            
-            if (ct > maxCycle) //check for max 
-            {
-                maxCycle = ct; //if higher than max, new max
-            }
-        }
-
-        else 
-        {
-            if (cache[i] > maxCycle) //if already cached
-            {
-                maxCycle = cache[i]; //check for higher max
-            }
-
-            cacheHit = false; //reset flag to restart for loop
-        }
-
-    }
-
-    return maxCycle;
-}
-
-int unoptimized_eval(int i, int j)
-{
-    int maxCycle = 0;
-    int currentNum;
-    int tempNum;
     int ct;
-    
-    for (i; i<=j; i++)
-    {
+
         currentNum = i;
         ct = 1;
         
+        list.push_back(currentNum);
+
         while(currentNum>1)
         {
             if((currentNum%2) == 0)
             {
                 currentNum = currentNum/2;
+                list.push_back(currentNum);
             }
             else
             {
                 currentNum = currentNum*3 + 1;
+                list.push_back(currentNum);
             }
             ct++;
         }
-        
-        if (ct>maxCycle)
-        {
-            maxCycle = ct;
-        }
-    }
     
-    return maxCycle;
+    return ct;
 }
 
 int collatz_eval (int i, int j) 
 {
-    #ifdef OPTIMIZATION_ON
-       return optimized_eval(i, j);
-    #else
-       return unoptimized_eval(i,j);
-    #endif
+    vector<long long> list1; //initialize list
+    vector<long long> list2;
+
+    int count1 = count_cycles(i, list1); //inserts into list
+    int count2 = count_cycles(j, list2);
+
+    vector<long long> smallerV;
+    vector<long long> biggerV;
+
+    // cout << "Print out of List 1:" << endl;
+    // for(int k = 0; k<list1.size(); ++k)
+    // {
+    //     cout << "Input at " << k << " is: " << list1[k] << endl;
+    // }
+
+    // cout << "Print out of List 2:" << endl;
+    // for(int k = 0; k<list2.size(); ++k)
+    // {
+    //     cout << "Input at " << k << " is: " << list2[k] << endl;
+    // }
+
+    if(list1.size()<list2.size())
+    {
+        vector<long long> smallerV = list1;
+        vector<long long> biggerV = list2;
+
+        for(int it = 0; it < smallerV.size(); ++it)
+        {
+            for(int itt = 0; itt < biggerV.size(); ++itt)
+            {
+                if(smallerV[it] == biggerV[itt])
+                {
+                    if(smallerV[0] == list1[0])
+                    {
+                        step1 = itt;
+                        step2 = it;
+                    }
+                    else
+                    {
+                        step1 = it;
+                        step2 = itt;
+                    }
+                    return smallerV[it];
+                }
+            }
+        }
+    }
+    else
+    {
+        vector<long long> smallerV = list2;
+        vector<long long> biggerV = list1;
+
+        for(int it = 0; it < smallerV.size(); ++it)
+        {
+            for(int itt = 0; itt <biggerV.size(); ++itt)
+            {
+                if(smallerV[it] == biggerV[itt])
+                {
+                    if(smallerV[0] == list1[0])
+                    {
+                        step1 = itt;
+                        step2 = it;
+                    }
+                    else
+                    {
+                        step1 = it;
+                        step2 = itt;
+                    }
+
+                    return smallerV[it];
+                }
+            }
+        }
+    }
+
+    return 0;
 }
 
 // -------------
@@ -216,7 +205,13 @@ int collatz_eval (int i, int j)
 // -------------
 
 void collatz_print (ostream& w, int i, int j, int v) {
-    w << i << " " << j << " " << v << endl;}
+    // if(i == 0 && j == 0)
+    //     exit(0);
+
+    w << i << " needs " << step2 << " steps, "
+      << j << " needs " << step1 << " steps, they meet at " 
+      << v << '\n';
+  }
 
 // -------------
 // collatz_solve
@@ -225,9 +220,12 @@ void collatz_print (ostream& w, int i, int j, int v) {
 void collatz_solve (istream& r, ostream& w) {
     int i;
     int j;
-    while (collatz_read(r, i, j)) {
+    while (collatz_read(r, i, j)) 
+    {
         const int v = collatz_eval(i, j);
-        collatz_print(w, i, j, v);}}
+        collatz_print(w, i, j, v);
+    }
+    }
 // -------------------------------
 // projects/collatz/RunCollatz.c++
 // Copyright (C) 2016
@@ -248,4 +246,5 @@ void collatz_solve (istream& r, ostream& w) {
 int main () {
     using namespace std;
     collatz_solve(cin, cout);
-    return 0;}
+    return 0;
+}
