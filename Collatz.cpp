@@ -205,8 +205,8 @@ int collatz_eval (int i, int j)
 // -------------
 
 void collatz_print (ostream& w, int i, int j, int v) {
-    // if(i == 0 && j == 0)
-    //     exit(0);
+    if(i == 0 && j == 0)
+        exit(0);
 
     w << i << " needs " << step2 << " steps, "
       << j << " needs " << step1 << " steps, they meet at " 

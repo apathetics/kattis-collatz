@@ -3,9 +3,9 @@
 
 using namespace std;
 
-vector<int> create_collatz(int num)
+vector<long long> create_collatz(long long num)
 {
-    vector<int> collatzList;
+    vector<long long> collatzList;
 
     collatzList.push_back(num);
 
@@ -26,7 +26,7 @@ vector<int> create_collatz(int num)
     return collatzList;
 }
 
-int count_collatz(int num, vector<int> list)
+int count_collatz(int num, vector<long long> list)
 {
     for(int i = 0; i<list.size(); ++i)
     {
@@ -37,7 +37,7 @@ int count_collatz(int num, vector<int> list)
     return -1;
 }
 
-int main()
+main()
 {
     int num1, num2;
 
@@ -45,17 +45,11 @@ int main()
 
     int i, k;
 
-    vector<int> list1;
-    vector<int> list2;
+    vector<long long> list1;
+    vector<long long> list2;
 
     while(cin >> num1 >> num2 && num1 && num2)
     {
-
-        if(num1 == 0 && num2 == 0)
-            exit(0);
-        if(num1>1000000 || num2>1000000)
-            exit(0);
-
         list1 = create_collatz(num1);
         list2 = create_collatz(num2);
 
@@ -68,7 +62,5 @@ int main()
 
         cout << num1 << " needs " << i << " steps, " << num2 << " needs " << k << " steps, they meet at " << list1[i] << '\n';
     }
-
-    return 0;
 
 }
